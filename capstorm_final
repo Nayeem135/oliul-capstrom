@@ -1,0 +1,197 @@
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#define MAX_MEDICINES 100 
+#define MAX_NAME_LEN 50 
+#define USERNAME "oliul islam" 
+#define PASSWORD "1374" 
+typedef struct { 
+int id; 
+char name[MAX_NAME_LEN]; 
+int quantity; 
+float price; 
+} Medicine; 
+Medicine inventory[MAX_MEDICINES]; 
+int medicineCount = 0; 
+void login(); 
+void registerUser(); 
+void addMedicine(); 
+void viewInventory(); 
+void updateInventory(); 
+void sellMedicine(); 
+void menu(); 
+int main() { 
+login(); 
+while (1) { 
+menu(); 
+} 
+return 0; 
+} 
+ 
+void login() { 
+    char inputUsername[50]; 
+    char inputPassword[20]; 
+    int loginAttempts = 3; 
+ 
+    while (loginAttempts > 0) { 
+        printf("\n=== Pharmacy Management System Login ===\n"); 
+        printf("Username: "); 
+        scanf(" %[^\n]", inputUsername); 
+        printf("Password: "); 
+        scanf(" %[^\n]", inputPassword); 
+ 
+        if (strcmp(inputUsername, USERNAME) == 0 && strcmp(inputPassword, PASSWORD) == 0) { 
+            printf("\nLogin successful! Welcome, %s.\n", USERNAME); 
+            return; 
+        } 
+ 
+        loginAttempts--; 
+        printf("\nIncorrect username or password. You have %d attempt(s) left.\n", loginAttempts); 
+ 
+        if (loginAttempts == 0) { 
+            printf("Would you like to register a new account? (yes/no): "); 
+            char choice[10]; 
+            scanf(" %[^\n]", choice); 
+            if (strcmp(choice, "yes") == 0 || strcmp(choice, "y") == 0) { 
+                registerUser(); 
+            } else { 
+                printf("Exiting the program. Goodbye!\n"); 
+                exit(0); 
+            } 
+        } 
+    } 
+} 
+ 
+void registerUser() { 
+    char newUsername[50], newPassword[20]; 
+    printf("\n=== Registration ===\n"); 
+    printf("Enter a new username: "); 
+    scanf(" %[^\n]", newUsername); 
+    printf("Enter a new password: "); 
+    scanf(" %[^\n]", newPassword); 
+ 
+    printf("\nRegistration successful! Use the new credentials to log in.\n"); 
+    exit(0); 
+} 
+ 
+void menu() { 
+    int choice; 
+ 
+    printf("\n=== Pharmacy Inventory and Sales Management ===\n"); 
+    printf("1. Add Medicine\n"); 
+    printf("2. View Inventory\n"); 
+    printf("3. Update Inventory\n"); 
+    printf("4. Sell Medicine\n"); 
+    printf("5. Exit\n"); 
+    printf("Enter your choice: "); 
+    scanf("%d", &choice); 
+ 
+    switch (choice) { 
+        case 1: 
+            addMedicine(); 
+            break; 
+        case 2: 
+            viewInventory(); 
+            break; 
+        case 3: 
+            updateInventory(); 
+            break; 
+        case 4: 
+            sellMedicine(); 
+            break; 
+        case 5: 
+            printf("Exiting the program. Goodbye!\n"); 
+            exit(0); 
+        default: 
+            printf("Invalid choice. Please try again.\n"); 
+    } 
+} 
+ 
+void addMedicine() { 
+    if (medicineCount >= MAX_MEDICINES) { 
+        printf("Inventory is full! Cannot add more medicines.\n"); 
+        return; 
+    } 
+ 
+    Medicine newMedicine; 
+    printf("\nEnter Medicine ID: "); 
+    scanf("%d", &newMedicine.id); 
+    printf("Enter Medicine Name: "); 
+    scanf(" %[^\n]", newMedicine.name); 
+    printf("Enter Quantity: "); 
+    scanf("%d", &newMedicine.quantity); 
+    printf("Enter Price: "); 
+    scanf("%f", &newMedicine.price); 
+ 
+    inventory[medicineCount++] = newMedicine; 
+    printf("Medicine added successfully!\n"); 
+} 
+ 
+void viewInventory() { 
+    if (medicineCount == 0) { 
+        printf("\nInventory is empty.\n"); 
+        return; 
+    } 
+ 
+    printf("\n=== Inventory ===\n"); 
+    printf("%-10s %-20s %-10s %-10s\n", "ID", "Name", "Quantity", "Price"); 
+    for (int i = 0; i < medicineCount; i++) { 
+        printf("%-10d %-20s %-10d %-10.2f\n", 
+               inventory[i].id, 
+               inventory[i].name, 
+               inventory[i].quantity, 
+               inventory[i].price); 
+    } 
+} 
+ 
+void updateInventory() { 
+    int id, found = 0; 
+ 
+    printf("\nEnter Medicine ID to update: "); 
+    scanf("%d", &id); 
+ 
+    for (int i = 0; i < medicineCount; i++) { 
+        if (inventory[i].id == id) { 
+            found = 1; 
+            printf("Enter new Quantity: "); 
+            scanf("%d", &inventory[i].quantity); 
+            printf("Enter new Price: "); 
+            scanf("%f", &inventory[i].price); 
+            printf("Medicine updated successfully!\n"); 
+            break; 
+        } 
+    } 
+ 
+    if (!found) { 
+        printf("Medicine with ID %d not found.\n", id); 
+    } 
+} 
+ 
+void sellMedicine() { 
+    int id, quantity, found = 0; 
+ 
+    printf("\nEnter Medicine ID to sell: "); 
+    scanf("%d", &id); 
+ 
+    for (int i = 0; i < medicineCount; i++) { 
+        if (inventory[i].id == id) { 
+            found = 1; 
+            printf("Enter quantity to sell: "); 
+            scanf("%d", &quantity); 
+ 
+            if (inventory[i].quantity < quantity) { 
+                printf("Insufficient stock! Only %d available.\n", inventory[i].quantity); 
+            } else { 
+                inventory[i].quantity -= quantity; 
+                printf("Sold %d of %s for $%.2f\n", 
+                       quantity, 
+                       inventory[i].name, 
+                       quantity * inventory[i].price); 
+            } 
+            break; 
+        } 
+    } 
+    if (!found) { 
+        printf("Medicine with ID %d not found.\n", id); 
+    } 
+}
